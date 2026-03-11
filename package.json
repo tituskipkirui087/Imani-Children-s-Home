@@ -2,7 +2,7 @@
   "name": "imani-childrens-home",
   "version": "1.0.0",
   "description": "Imani Childrens Home - Donation website for Children First Kenya",
-  "main": "index.js",
+  "main": "config/server.js",
   "scripts": {
     "start": "node config/server.js",
     "start:prod": "NODE_ENV=production node config/server.js",
