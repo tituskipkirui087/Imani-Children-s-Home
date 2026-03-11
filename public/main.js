@@ -349,18 +349,20 @@ function initCommentsShowMore() {
     // Create show more button
     const btn = document.createElement('button');
     btn.className = 'show-more-btn visible';
-    btn.textContent = 'Show More (' + (comments.length - initialShow) + ')';
+    btn.innerHTML = 'Show More <span style="font-size:12px;">▾</span>';
     btn.style.cssText = 'width:100%;padding:12px;margin:10px 0;background:#f0f0f0;border:none;border-radius:8px;color:#2563eb;font-weight:600;cursor:pointer;font-size:14px;';
+    
+    let showingAll = false;
     
     btn.addEventListener('click', function() {
       const hidden = area.querySelectorAll('[data-hidden="true"]');
-      const isShowing = hidden[0] && hidden[0].style.display !== 'none';
       
       hidden.forEach(function(c) {
-        c.style.display = isShowing ? 'none' : 'block';
+        c.style.display = showingAll ? 'none' : 'block';
       });
       
-      btn.textContent = isShowing ? 'Show More (' + (comments.length - initialShow) + ')' : 'Show Less';
+      showingAll = !showingAll;
+      btn.innerHTML = showingAll ? 'Show Less <span style="font-size:12px;">▴</span>' : 'Show More <span style="font-size:12px;">▾</span>';
     });
     
     area.appendChild(btn);
