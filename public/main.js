@@ -257,6 +257,43 @@ function showCryptoWidget(amount, crypto) {
   container.classList.remove('hidden');
 }
 
+// Comments Show More/Less for mobile
+function initCommentsShowMore() {
+  const area = document.getElementById('comments-area');
+  if (!area) return;
+  
+  const comments = area.querySelectorAll('.comentario');
+  const isMobile = window.innerWidth <= 768;
+  const initialShow = 2;
+  
+  if (isMobile && comments.length > initialShow) {
+    // Hide comments beyond initialShow
+    for (let i = initialShow; i < comments.length; i++) {
+      comments[i].style.display = 'none';
+      comments[i].dataset.hidden = 'true';
+    }
+    
+    // Create show more button
+    const btn = document.createElement('button');
+    btn.className = 'show-more-btn visible';
+    btn.textContent = 'Show More (' + (comments.length - initialShow) + ')';
+    btn.style.cssText = 'width:100%;padding:12px;margin:10px 0;background:#f0f0f0;border:none;border-radius:8px;color:#2563eb;font-weight:600;cursor:pointer;font-size:14px;';
+    
+    btn.addEventListener('click', function() {
+      const hidden = area.querySelectorAll('[data-hidden="true"]');
+      const isShowing = hidden[0] && hidden[0].style.display !== 'none';
+      
+      hidden.forEach(function(c) {
+        c.style.display = isShowing ? 'none' : 'block';
+      });
+      
+      btn.textContent = isShowing ? 'Show More (' + (comments.length - initialShow) + ')' : 'Show Less';
+    });
+    
+    area.appendChild(btn);
+  }
+}
+
 // Mobile Carousel
 function initMobileCarousel() {
   const track = document.getElementById('carousel-track');
@@ -312,6 +349,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Mobile carousel
   initMobileCarousel();
+  
+  // Comments show more/less - delay to ensure render.js has finished
+  setTimeout(initCommentsShowMore, 500);
   
   // Amount buttons
   var amountBtns = document.querySelectorAll('.valor-btn[data-amount]');
