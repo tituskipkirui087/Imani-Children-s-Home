@@ -197,7 +197,16 @@ async function generatePayment(crypto, usdAmount) {
       })
     });
     
-    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error('Server error: ' + resp.status);
+    }
+    
+    const text = await resp.text();
+    if (!text || text.trim() === '') {
+      throw new Error('Empty response from server');
+    }
+    
+    const data = JSON.parse(text);
     
     if (data && data.pay_address) {
       // Store payment data
@@ -266,7 +275,16 @@ async function checkPaymentStatus(paymentId) {
   const interval = setInterval(async function() {
     try {
       const resp = await fetch('/api/nowpayment?payment_id=' + paymentId);
-      const data = await resp.json();
+      if (!resp.ok) {
+        statusEl.innerHTML = '<p style="margin:0;color:#f44336;">✗ Server error</p>';
+        return;
+      }
+      const text = await resp.text();
+      if (!text || text.trim() === '') {
+        statusEl.innerHTML = '<p style="margin:0;color:#ff9800;">⏳ Checking...</p>';
+        return;
+      }
+      const data = JSON.parse(text);
       
       if (data && (data.payment_status === 'confirmed' || data.payment_status === 'finished')) {
         clearInterval(interval);
