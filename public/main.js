@@ -422,7 +422,7 @@ function initCommentsShowMore() {
   }
 }
 
-// Mobile Carousel with image preloading
+// Mobile Carousel - Fixed for slow connections
 function initMobileCarousel() {
   const track = document.getElementById('carousel-track');
   if (!track) return;
@@ -432,67 +432,34 @@ function initMobileCarousel() {
   
   let currentIndex = 0;
   let isTransitioning = false;
-  const loadedImages = {};
   
-  // Add loading placeholder
-  const loading = document.createElement('div');
-  loading.className = 'carousel-loading';
-  track.appendChild(loading);
-  
-  // Preload all images
-  function preloadImages() {
-    let loadedCount = 0;
-    const totalSlides = slides.length;
-    
-    slides.forEach(function(slide, index) {
-      const img = slide.querySelector('img');
-      if (img && img.src) {
-        const imageLoader = new Image();
-        imageLoader.onload = function() {
-          loadedImages[index] = true;
-          loadedCount++;
-          if (loadedCount === 1 && !slides[0].classList.contains('active')) {
-            loading.style.display = 'none';
-            slides[0].classList.add('active');
-          }
-        };
-        imageLoader.onerror = function() {
-          loadedImages[index] = false;
-          loadedCount++;
-        };
-        imageLoader.src = img.src;
-      } else {
-        loadedImages[index] = true;
-        loadedCount++;
-      }
-    });
-    
-    // Hide loading after all images loaded or timeout
-    setTimeout(function() {
-      loading.style.display = 'none';
-      if (!slides[0].classList.contains('active')) {
-        slides[0].classList.add('active');
-      }
-    }, 3000);
+  // Check if first image is already loaded
+  function isImageLoaded(slide) {
+    const img = slide.querySelector('img');
+    if (!img) return true;
+    return img.complete && img.naturalHeight !== 0;
   }
   
-  preloadImages();
+  // Show first slide immediately if image is already loaded
+  if (isImageLoaded(slides[0])) {
+    slides[0].classList.add('active');
+  } else {
+    // Wait for first image to load
+    const firstImg = slides[0].querySelector('img');
+    if (firstImg) {
+      firstImg.onload = function() {
+        slides[0].classList.add('active');
+      };
+    }
+  }
   
   // Change slide
   function changeSlide() {
     if (isTransitioning) return;
     
-    const nextIndex = (currentIndex + 1) % slides.length;
-    
-    // Skip if next image not loaded
-    if (!loadedImages[nextIndex]) {
-      setTimeout(changeSlide, 1000);
-      return;
-    }
-    
     isTransitioning = true;
     slides[currentIndex].classList.remove('active');
-    currentIndex = nextIndex;
+    currentIndex = (currentIndex + 1) % slides.length;
     slides[currentIndex].classList.add('active');
     
     setTimeout(function() {
