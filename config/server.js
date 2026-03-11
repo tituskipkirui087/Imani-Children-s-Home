@@ -9,10 +9,18 @@ const PORT = process.env.PORT || 10000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Determine root path - works both locally and on Render
 const basePath = path.resolve(__dirname);
 const rootPath = path.join(basePath, '..');
-const publicPath = path.join(rootPath, 'public');
-const configPath = path.join(rootPath, 'config');
+
+// Check if we're in config folder or root
+const publicPath = fs.existsSync(path.join(rootPath, 'public')) 
+    ? path.join(rootPath, 'public') 
+    : path.join(basePath, 'public');
+const configPath = fs.existsSync(path.join(rootPath, 'config')) 
+    ? path.join(rootPath, 'config') 
+    : basePath;
 
 console.log('Server paths:', { basePath, rootPath, publicPath, configPath });
 console.log('Public exists:', fs.existsSync(publicPath));

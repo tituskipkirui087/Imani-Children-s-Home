@@ -16,6 +16,7 @@ Make sure your code is pushed to GitHub (already done ✓)
 5. Configure the settings:
    - **Name**: `imani-childrens-home`
    - **Environment**: `Node`
+   - **Root Directory**: (leave empty - use root)
    - **Build Command**: `npm install`
    - **Start Command**: `node config/server.js`
    - **Plan**: Free (select the free tier)
