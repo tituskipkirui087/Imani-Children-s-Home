@@ -45,7 +45,8 @@ function renderPage() {
         const div = document.createElement('div');
         div.className = 'comentario';
         if (isMobile && index >= initialShow) {
-          div.classList.add('hidden-comment');
+          div.style.display = 'none';
+          div.dataset.hidden = 'true';
         }
         
         let repliesHTML = '';
@@ -86,8 +87,8 @@ function renderPage() {
         showMoreBtn.className = 'show-more-btn';
         showMoreBtn.textContent = 'Show More (' + (COMENTARIOS.length - initialShow) + ')';
         showMoreBtn.addEventListener('click', function() {
-          const hiddenComments = area.querySelectorAll('.hidden-comment');
-          const isShowing = hiddenComments[0].style.display !== 'none';
+          const hiddenComments = area.querySelectorAll('.comentario[data-hidden="true"]');
+          const isShowing = hiddenComments[0] && hiddenComments[0].style.display !== 'none';
           hiddenComments.forEach(c => {
             c.style.display = isShowing ? 'none' : 'block';
           });
