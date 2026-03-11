@@ -315,7 +315,7 @@ function initCommentsShowMore() {
       const btn = document.createElement('button');
       btn.className = 'show-more-btn visible';
       btn.setAttribute('type', 'button');
-      btn.textContent = 'Show More (' + (comments.length - initialShow) + ')';
+      btn.innerHTML = 'Show More <span style="font-size:12px;">▾</span>';
       
       // Make sure button is visible with explicit styles
       btn.style.display = 'block';
@@ -342,7 +342,7 @@ function initCommentsShowMore() {
         });
         
         showingAll = !showingAll;
-        btn.textContent = showingAll ? 'Show Less' : 'Show More (' + (comments.length - initialShow) + ')';
+        btn.innerHTML = showingAll ? 'Show Less <span style="font-size:12px;">▴</span>' : 'Show More <span style="font-size:12px;">▾</span>';
       });
       
       area.appendChild(btn);
