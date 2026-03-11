@@ -31,16 +31,22 @@ function renderPage() {
     }
 
     // comentarios
-    if (window.COMENTARIOS && Array.isArray(COMENTARIOS)) {
+    if (window.COMENTARIOS && Array.isArray(COMMENTARIOS)) {
       const area = document.getElementById('comments-area');
+      const isMobile = window.innerWidth <= 768;
+      const initialShow = 2; // Show 2 comments on mobile initially
 
       function avatarGradient(color) {
         return `background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%);`;
       }
 
+      // Render comments with show more/less for mobile
       COMENTARIOS.forEach((c, index) => {
         const div = document.createElement('div');
         div.className = 'comentario';
+        if (isMobile && index >= initialShow) {
+          div.classList.add('hidden-comment');
+        }
         
         let repliesHTML = '';
         if (c.replies && c.replies.length > 0) {
@@ -73,6 +79,22 @@ function renderPage() {
         `;
         area.appendChild(div);
       });
+
+      // Add Show More/Less button for mobile
+      if (isMobile && COMENTARIOS.length > initialShow) {
+        const showMoreBtn = document.createElement('button');
+        showMoreBtn.className = 'show-more-btn';
+        showMoreBtn.textContent = 'Show More (' + (COMENTARIOS.length - initialShow) + ')';
+        showMoreBtn.addEventListener('click', function() {
+          const hiddenComments = area.querySelectorAll('.hidden-comment');
+          const isShowing = hiddenComments[0].style.display !== 'none';
+          hiddenComments.forEach(c => {
+            c.style.display = isShowing ? 'none' : 'block';
+          });
+          this.textContent = isShowing ? 'Show More (' + (COMENTARIOS.length - initialShow) + ')' : 'Show Less';
+        });
+        area.appendChild(showMoreBtn);
+      }
 
       // Add click listeners to likes and views
       document.querySelectorAll('.likes').forEach(likeBtn => {
