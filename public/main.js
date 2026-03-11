@@ -176,6 +176,35 @@ function createPaymentView(usdAmount, crypto, payAddress, payAmount, paymentId) 
   '</div>';
 }
 
+// Show error notification
+function showErrorNotification(message) {
+  const container = document.getElementById('notifications-container');
+  if (!container) {
+    // Fallback to alert if no container
+    alert('Error: ' + message);
+    return;
+  }
+  
+  const notification = document.createElement('div');
+  notification.className = 'notification error';
+  notification.innerHTML = `
+    <div class="notification-avatar" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">!</div>
+    <div class="notification-content">
+      <div class="notification-type-label" style="color: #dc2626;">Error</div>
+      <div class="notification-message">${message}</div>
+    </div>
+  `;
+  container.appendChild(notification);
+  
+  // Remove after 5 seconds
+  setTimeout(function() {
+    notification.classList.add('remove');
+    setTimeout(function() {
+      notification.remove();
+    }, 400);
+  }, 5000);
+}
+
 // Generate Payment - Step 1
 async function generatePayment(crypto, usdAmount) {
   const btnEl = document.getElementById('gen-btn');
@@ -224,15 +253,21 @@ async function generatePayment(crypto, usdAmount) {
       const container = modal.querySelector('.select-amount');
       if (!container) return;
       container.innerHTML = createPaymentView(usdAmount, crypto, data.pay_address, data.pay_amount, data.payment_id);
+    } else if (data && data.error) {
+      showErrorNotification(data.error);
+      if (btnEl) {
+        btnEl.disabled = false;
+        btnEl.textContent = 'Generate Payment →';
+      }
     } else {
-      alert('Failed to generate payment. Please try again.');
+      showErrorNotification('Failed to generate payment. Please try again.');
       if (btnEl) {
         btnEl.disabled = false;
         btnEl.textContent = 'Generate Payment →';
       }
     }
   } catch (e) {
-    alert('Error: ' + e.message);
+    showErrorNotification(e.message || 'An error occurred');
     if (btnEl) {
       btnEl.disabled = false;
       btnEl.textContent = 'Generate Payment →';
