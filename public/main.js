@@ -422,7 +422,7 @@ function initCommentsShowMore() {
   }
 }
 
-// Mobile Carousel
+// Mobile Carousel with image preloading
 function initMobileCarousel() {
   const track = document.getElementById('carousel-track');
   if (!track) return;
@@ -431,16 +431,77 @@ function initMobileCarousel() {
   if (slides.length === 0) return;
   
   let currentIndex = 0;
+  let isTransitioning = false;
+  const loadedImages = {};
   
-  // Show first slide
-  slides[0].classList.add('active');
+  // Add loading placeholder
+  const loading = document.createElement('div');
+  loading.className = 'carousel-loading';
+  track.appendChild(loading);
   
-  // Change slide every 4 seconds with gentle fade
-  setInterval(function() {
+  // Preload all images
+  function preloadImages() {
+    let loadedCount = 0;
+    const totalSlides = slides.length;
+    
+    slides.forEach(function(slide, index) {
+      const img = slide.querySelector('img');
+      if (img && img.src) {
+        const imageLoader = new Image();
+        imageLoader.onload = function() {
+          loadedImages[index] = true;
+          loadedCount++;
+          if (loadedCount === 1 && !slides[0].classList.contains('active')) {
+            loading.style.display = 'none';
+            slides[0].classList.add('active');
+          }
+        };
+        imageLoader.onerror = function() {
+          loadedImages[index] = false;
+          loadedCount++;
+        };
+        imageLoader.src = img.src;
+      } else {
+        loadedImages[index] = true;
+        loadedCount++;
+      }
+    });
+    
+    // Hide loading after all images loaded or timeout
+    setTimeout(function() {
+      loading.style.display = 'none';
+      if (!slides[0].classList.contains('active')) {
+        slides[0].classList.add('active');
+      }
+    }, 3000);
+  }
+  
+  preloadImages();
+  
+  // Change slide
+  function changeSlide() {
+    if (isTransitioning) return;
+    
+    const nextIndex = (currentIndex + 1) % slides.length;
+    
+    // Skip if next image not loaded
+    if (!loadedImages[nextIndex]) {
+      setTimeout(changeSlide, 1000);
+      return;
+    }
+    
+    isTransitioning = true;
     slides[currentIndex].classList.remove('active');
-    currentIndex = (currentIndex + 1) % slides.length;
+    currentIndex = nextIndex;
     slides[currentIndex].classList.add('active');
-  }, 4000);
+    
+    setTimeout(function() {
+      isTransitioning = false;
+    }, 600);
+  }
+  
+  // Auto-advance every 5 seconds
+  setInterval(changeSlide, 5000);
 }
 
 // Make functions global
