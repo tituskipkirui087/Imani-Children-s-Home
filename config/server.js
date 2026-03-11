@@ -169,65 +169,6 @@ app.post('/api/verify-payment', async (req, res) => {
     }
 });
 
-// NOWPayment API endpoints
-const NOWPAYMENT_API_KEY = '6XQDG6M-WK54TG4-GWA8712-VA25NZW';
-
-// Create payment
-app.post('/api/nowpayment', async (req, res) => {
-    const { price_amount, pay_currency } = req.body;
-    
-    if (!price_amount) {
-        return res.json({ error: 'Amount is required' });
-    }
-    
-    try {
-        const response = await axios.post(
-            'https://api.nowpayments.io/v1/payment',
-            {
-                price_amount: price_amount,
-                price_currency: 'usd',
-                pay_currency: pay_currency || 'btc',
-                order_description: 'Donation to Imani Children Home',
-                order_id: 'IMANI_' + Date.now()
-            },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': NOWPAYMENT_API_KEY
-                }
-            }
-        );
-        
-        res.json(response.data);
-    } catch (error) {
-        console.error('NOWPayment error:', error.response?.data || error.message);
-        res.json({ error: error.response?.data?.message || 'Failed to create payment' });
-    }
-});
-
-// Check payment status
-app.get('/api/nowpayment', async (req, res) => {
-    const { payment_id } = req.query;
-    
-    if (!payment_id) {
-        return res.json({ error: 'Payment ID is required' });
-    }
-    
-    try {
-        const response = await axios.get(
-            `https://api.nowpayments.io/v1/payment/${payment_id}`,
-            {
-                headers: { 'x-api-key': NOWPAYMENT_API_KEY }
-            }
-        );
-        
-        res.json(response.data);
-    } catch (error) {
-        console.error('NOWPayment status error:', error.response?.data || error.message);
-        res.json({ error: error.response?.data?.message || 'Failed to get payment status' });
-    }
-});
-
 // Serve HTML pages
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));
