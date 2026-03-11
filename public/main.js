@@ -24,15 +24,47 @@ let currentPaymentData = {};
 function copyAddress() {
   const addrEl = document.getElementById('wallet-address');
   if (addrEl) {
-    navigator.clipboard.writeText(addrEl.textContent).then(function() {
-      const msgEl = document.getElementById('copy-msg');
-      if (msgEl) {
-        msgEl.style.display = 'block';
-        setTimeout(function() {
-          msgEl.style.display = 'none';
-        }, 2000);
-      }
-    });
+    const address = addrEl.textContent;
+    
+    // Try clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(address).then(function() {
+        showCopyMessage();
+      }).catch(function() {
+        fallbackCopy(address);
+      });
+    } else {
+      fallbackCopy(address);
+    }
+  }
+}
+
+// Fallback copy function
+function fallbackCopy(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  textArea.style.top = '-999999px';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    showCopyMessage();
+  } catch (err) {
+    alert('Copy failed. Please copy manually: ' + text);
+  }
+  document.body.removeChild(textArea);
+}
+
+function showCopyMessage() {
+  const msgEl = document.getElementById('copy-msg');
+  if (msgEl) {
+    msgEl.style.display = 'block';
+    setTimeout(function() {
+      msgEl.style.display = 'none';
+    }, 2000);
   }
 }
 
