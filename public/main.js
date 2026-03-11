@@ -350,7 +350,7 @@ function initCommentsShowMore() {
   }, 100);
 }
 
-// Mobile Carousel
+// Mobile Carousel with image preloading for slow connections
 function initMobileCarousel() {
   const track = document.getElementById('carousel-track');
   if (!track) return;
@@ -359,16 +359,76 @@ function initMobileCarousel() {
   if (slides.length === 0) return;
   
   let currentIndex = 0;
+  let isTransitioning = false;
+  let loadedImages = {};
   
-  // Show first slide
-  slides[0].classList.add('active');
+  // Preload all images first
+  function preloadImages() {
+    slides.forEach(function(slide, index) {
+      const img = slide.querySelector('img');
+      if (img && img.src) {
+        const imageLoader = new Image();
+        imageLoader.onload = function() {
+          loadedImages[index] = true;
+          // Show first image immediately when loaded
+          if (index === 0 && !slides[0].classList.contains('active')) {
+            slides[0].classList.add('active');
+          }
+        };
+        imageLoader.onerror = function() {
+          loadedImages[index] = false;
+        };
+        imageLoader.src = img.src;
+      } else {
+        loadedImages[index] = true;
+      }
+    });
+  }
   
-  // Change slide every 4 seconds with gentle fade
-  setInterval(function() {
+  // Start preloading
+  preloadImages();
+  
+  // Show first slide after a short delay or immediately if already loaded
+  setTimeout(function() {
+    if (loadedImages[0] || slides[0].querySelector('img').complete) {
+      slides[0].classList.add('active');
+    } else {
+      slides[0].querySelector('img').onload = function() {
+        slides[0].classList.add('active');
+      };
+    }
+  }, 500);
+  
+  // Change slide with better transition handling
+  function changeSlide() {
+    if (isTransitioning) return;
+    
+    const nextIndex = (currentIndex + 1) % slides.length;
+    
+    // Check if next image is loaded
+    if (!loadedImages[nextIndex] && !slides[nextIndex].querySelector('img').complete) {
+      // Skip to next if not loaded, try again in 1 second
+      setTimeout(changeSlide, 1000);
+      return;
+    }
+    
+    isTransitioning = true;
+    
+    // Remove active from current
     slides[currentIndex].classList.remove('active');
-    currentIndex = (currentIndex + 1) % slides.length;
+    
+    // Add active to next
+    currentIndex = nextIndex;
     slides[currentIndex].classList.add('active');
-  }, 4000);
+    
+    // Reset transition lock after animation completes
+    setTimeout(function() {
+      isTransitioning = false;
+    }, 800); // Match CSS transition duration
+  }
+  
+  // Change slide every 5 seconds (slower for better user experience on slow connections)
+  setInterval(changeSlide, 5000);
 }
 
 // Make functions global
