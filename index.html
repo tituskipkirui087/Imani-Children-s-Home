@@ -27,7 +27,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
     <link href="/public/css2.css" rel="stylesheet" />
     <link rel="stylesheet" href="/public/styles.css" />
-    <link rel="stylesheet" href="/public/all.min.css" />
     <style>
       /* Estilos para o FAQ */
       .faq-section {
@@ -132,6 +131,8 @@
     </script>
   </head>
   <body cz-shortcut-listen="true" style="overflow: auto">
+    <!-- Floating Donate Button (Mobile Only) -->
+    <a href="#" onclick="document.getElementById('modal-doacao').style.display='flex';document.getElementById('modal-doacao').classList.remove('hidden');return false;" class="floating-donate-btn">DONATE NOW</a>
     <header>
       <div class="container">
         <div class="header-content">
@@ -160,6 +161,12 @@
                   <a
                     href="/about/"
                     >About Us</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="/about/#who-we-are"
+                    >Who We Are</a
                   >
                 </li>
                 <li>
@@ -212,18 +219,37 @@
             <h1 id="title" style="font-size: 2.5rem; font-weight: 800; color: #1e40af; margin: 15px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); border-bottom: 3px solid; border-image: linear-gradient(90deg, #2563eb, #3b82f6, #60a5fa) 1; padding-bottom: 10px;"></h1>
 
             <div class="foto-principal">
-              <img id="main-image" src="/public/Imani 2.jpg" alt="Imani Children Home" loading="eager" decoding="sync" width="760" height="350" />
+              <!-- Mobile carousel only (hidden on desktop) -->
+              <div class="mobile-carousel" id="mobile-carousel">
+                <div class="carousel-track" id="carousel-track">
+                  <div class="carousel-slide active"><img src="/public/Imani 2.jpg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/1.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/2.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/3.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/4.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/5.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/6.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/7.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/8.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/9.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/10.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/11.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/12.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/13.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                  <div class="carousel-slide"><img src="/public/14.jpeg" alt="Imani Children" /><div class="watermark">TOGETHER WE CAN MAKE A DIFFERENCE</div></div>
+                </div>
+              </div>
             </div>
 
             <div class="progresso-principal">
               <div class="valores-container">
                 <div class="valor-arrecadado">
                   <span class="valor-label">Raised</span>
-                  <span class="valor-numero" id="amount-collected">KSh 1.2M</span>
+                  <span class="valor-numero" id="amount-collected">$10,000</span>
                 </div>
                 <div class="valor-meta">
                   <span class="valor-label">Goal</span>
-                  <span class="valor-numero" id="amount-goal">KSh 100M</span>
+                  <span class="valor-numero" id="amount-goal">$100,000</span>
                 </div>
               </div>
               <div class="barra-progresso-container">
@@ -260,14 +286,9 @@
               <!-- Conteúdo da aba Sobre -->
               <div class="tab-content active" id="Sobre">
                 <div class="historia-texto">
-                  <span class="data-criacao"
-                    ><strong>Fundraiser created on:</strong>
-                    <br>
-                    <span id="creation-date"></span></span
-                  >
+
 
                   <p><strong> Verified Story✅</strong></p>
-                  <p><strong>Fundraiser created on: 11/01/2025</strong><br><span id="creation-date"></span></p>
                   <p><strong>Imani Children’s Home, located in Kayole, Nairobi, is a loving and safe haven for abandoned, orphaned, and vulnerable children. Founded in 1992, our mission is to provide a nurturing family environment where every child feels valued, protected, and supported. At Imani, we go beyond providing shelter — we focus on holistic care, ensuring that children have access to quality education, proper healthcare, emotional guidance, and essential life skills. Our programs are designed to empower children to reach their full potential and to help them grow into responsible, confident, and compassionate adults. Through the dedication of our staff, volunteers, and the wider community, Imani Children’s Home transforms the lives of countless children, offering them hope, stability, and the opportunity to build brighter futures. We believe that every child deserves love, care, and the chance to thrive, and we work tirelessly to make that belief a reality every day.  </strong></p>
                   <p id="text-01">
                   </p>
@@ -446,7 +467,7 @@
         <div class="select-amount">
           <h2 id="donate-modal-title" style="color: #2563eb;"></h2>
           <p id="donate-modal-sub-title" class="modal-subtitulo"></p>
-          <p class="modal-click-hint" style="font-size:13px;color:#6b7280;margin-bottom:8px;"> Enter your email, select your country, then click an amount to donate instantly via</p>
+          <p class="modal-click-hint" style="font-size:13px;color:#6b7280;margin-bottom:8px;">💡 Click an amount below, then select a crypto to pay</p>
 
           <!-- Donor email input -->
           <div class="donor-email-wrap" style="margin-bottom:14px;">
@@ -470,40 +491,34 @@
           </div>
 
           <div class="valores-doacao" id="prices-area">
-            <button class="valor-item valor-btn" data-amount="1600" type="button">KSh 1,600</button>
-            <button class="valor-item valor-btn" data-amount="2500" type="button">KSh 2,500 <span class="badge-popular">Popular</span></button>
-            <button class="valor-item valor-btn" data-amount="5000" type="button">KSh 5,000</button>
-            <button class="valor-item valor-btn" data-amount="7500" type="button">KSh 7,500</button>
-            <button class="valor-item valor-btn" data-amount="10000" type="button">KSh 10,000</button>
-            <button class="valor-item valor-btn" data-amount="15000" type="button">KSh 15,000</button>
-            <button class="valor-item valor-btn" data-amount="20000" type="button">KSh 20,000</button>
-            <button class="valor-item valor-btn" data-amount="25000" type="button">KSh 25,000</button>
+            <button class="valor-item valor-btn" data-amount="10" type="button">$10</button>
+            <button class="valor-item valor-btn" data-amount="25" type="button">$25 <span class="badge-popular">Popular</span></button>
+            <button class="valor-item valor-btn" data-amount="50" type="button">$50</button>
+            <button class="valor-item valor-btn" data-amount="75" type="button">$75</button>
+            <button class="valor-item valor-btn" data-amount="100" type="button">$100</button>
+            <button class="valor-item valor-btn" data-amount="150" type="button">$150</button>
+            <button class="valor-item valor-btn" data-amount="200" type="button">$200</button>
+            <button class="valor-item valor-btn" data-amount="250" type="button">$250</button>
           </div>
           <!-- Custom amount input that auto-fills when amount is selected -->
           <div class="custom-amount-wrap" style="margin: 16px 0;">
             <input
               type="number"
               id="custom-amount-input"
-              placeholder="Or enter custom amount (KSh)"
-              min="1600"
+              placeholder="Or enter custom amount (USD)"
+              min="1"
               style="width:100%;padding:12px 14px;border:2px solid #d1d5db;border-radius:8px;font-size:16px;outline:none;box-sizing:border-box;text-align:center;font-weight:bold;"
             />
             <p id="custom-amount-error" style="color:#e74c3c;font-size:12px;margin:4px 0 0;display:none;">Please enter a valid amount.</p>
           </div>
           <div class="valor-item-grande" id="highest-price">
-            <button class="valor-btn" data-amount="50000" type="button" style="background:none;border:none;width:100%;font-size:inherit;font-weight:inherit;color:inherit;cursor:pointer;">
-              💛 KSh 50,000 — Be a Champion for Imani Children
+            <button class="valor-btn" data-amount="500" type="button" style="background:none;border:none;width:100%;font-size:inherit;font-weight:inherit;color:inherit;cursor:pointer;">
+              💛 $500 — Be a Champion for Imani Children
             </button>
           </div>
           <div class="modal-footer">
-            <p style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:8px;">🔒Secure payments powered by Paystack</p>
-            <div class="metodos-pagamento paystack-methods">
-              <button type="button" class="pay-method-badge pay-method-btn" data-channel="mobile_money" title="Pay with MPesa">📱 MPesa</button>
-              <button type="button" class="pay-method-badge pay-method-btn" data-channel="mobile_money" title="Pay with Airtel Money">📱 Airtel Money</button>
-              <button type="button" class="pay-method-badge pay-method-btn" data-channel="mobile_money" title="Pay with Tkash">📱 Tkash</button>
-              <button type="button" class="pay-method-badge pay-method-btn" data-channel="card" title="Pay with Card">💳 Card</button>
-              <button type="button" class="pay-method-badge pay-method-btn" data-channel="bank" title="Pay with Bank Transfer">🏦 Bank</button>
-            </div>
+            <p style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:8px;">🔒Secure crypto payments via NOWPayments</p>
+            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:16px 0 8px;">💳 We accept: Bitcoin, Ethereum, USDT, BNB, Solana, TRON</p>
           </div>
         </div>
         <div class="thanks text-center p-6 bg-white rounded-lg shadow-md max-w-lg mx-auto hidden"
@@ -530,6 +545,13 @@
       <span class="toast-icon">⚠️</span>
       <span class="toast-text">
         Payment failed. Please try again or use a different payment method.
+      </span>
+    </div>
+
+    <div id="toast-success" class="toast toast-success hidden" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:2px solid #4caf50;">
+      <span class="toast-icon">✓</span>
+      <span class="toast-text">
+        🎉 Thank you for your donation! Payment received!
       </span>
     </div>
 
@@ -566,26 +588,42 @@
         margin-top: 6px;
       }
       .pay-method-badge {
-        background: #f0f4ff;
-        border: 1px solid #d0d9ff;
-        color: #143eee;
-        border-radius: 20px;
-        padding: 4px 12px;
-        font-size: 12px;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        border: 2px solid #f0b90b;
+        color: #fff;
+        border-radius: 12px;
+        padding: 10px 16px;
+        font-size: 14px;
         font-weight: 600;
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
       }
       .pay-method-btn {
         cursor: pointer;
-        transition: transform 0.15s, box-shadow 0.15s, background 0.15s, color 0.15s;
+        transition: all 0.3s;
         font-family: inherit;
       }
       .pay-method-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(20,62,238,0.25);
-        background: linear-gradient(90deg, #143eee, #0b2bd6) !important;
-        color: #fff !important;
-        border-color: transparent !important;
+        box-shadow: 0 4px 12px rgba(240, 185, 11, 0.4);
+        background: linear-gradient(135deg, #f0b90b 0%, #d49a0a 100%) !important;
+        color: #000 !important;
+        border-color: #fff !important;
+      }
+      .crypto-symbol {
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .crypto-btn-btc .crypto-symbol { color: #F7931A; }
+      .crypto-btn-eth .crypto-symbol { color: #627EEA; }
+      .crypto-btn-usdt .crypto-symbol { color: #26A17B; }
+      .crypto-btn-bnb .crypto-symbol { color: #F3BA2F; }
+      .crypto-btn-sol .crypto-symbol { color: #9945FF; }
+      .crypto-btn-trx .crypto-symbol { color: #FF0013; }
+      .pay-method-btn:hover .crypto-symbol {
+        color: #000;
       }
       .pay-method-btn:active {
         transform: scale(0.95);
@@ -610,42 +648,34 @@
     </style>
 
     <script>
-      /* ── Paystack inline payment – all channels ── */
-      const PAYSTACK_PUBLIC_KEY = "pk_test_7536e5b57abfcdfb906f76ea9f11041fa33dc988";
+      // Crypto payment functions are in main.js
 
-      // Flag: true while Paystack popup is open — prevents modal backdrop from closing modal
-      var _paystackActive = false;
-
-      // Country exchange rates (USD to local currency)
-      const COUNTRY_RATES = {
-        'KE': { currency: 'KES', rate: 160 },
-        'GH': { currency: 'GHS', rate: 12 },
-        'KE': { currency: 'KES', rate: 160 },
-        'ZA': { currency: 'ZAR', rate: 19 },
-        'EG': { currency: 'EGP', rate: 50 },
-        'MA': { currency: 'MAD', rate: 10 },
-        'TZ': { currency: 'TZS', rate: 2500 },
-        'UG': { currency: 'UGX', rate: 3800 },
-        'RW': { currency: 'RWF', rate: 1200 },
-        'SN': { currency: 'XOF', rate: 620 },
-        'CI': { currency: 'XOF', rate: 620 },
-        'CM': { currency: 'XAF', rate: 620 },
-        'ET': { currency: 'ETB', rate: 56 },
-        'ZW': { currency: 'ZWL', rate: 640 },
-        'ZM': { currency: 'ZMW', rate: 26 },
-        'MW': { currency: 'MWK', rate: 1680 },
-        'MZ': { currency: 'MZN', rate: 64 },
-        'BW': { currency: 'BWP', rate: 14 },
-        'SL': { currency: 'SLL', rate: 22000 },
-        'LR': { currency: 'LRD', rate: 190 },
-        'US': { currency: 'USD', rate: 1 },
-        'GB': { currency: 'GBP', rate: 0.79 },
-        'CA': { currency: 'CAD', rate: 1.36 },
-        'AU': { currency: 'AUD', rate: 1.53 },
-        'DE': { currency: 'EUR', rate: 0.92 },
-        'FR': { currency: 'EUR', rate: 0.92 },
-        'OTHER': { currency: 'USD', rate: 1 }
-      };
+      // Tab switching functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const tabItems = document.querySelectorAll('.tabs-menu li');
+        
+        tabItems.forEach(function(item) {
+          item.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            // Remove active class from all tabs
+            tabItems.forEach(function(t) { t.classList.remove('active'); });
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(function(content) { content.classList.remove('active'); });
+            
+            // Show the selected tab content
+            const selectedContent = document.getElementById(tabName);
+            if (selectedContent) {
+              selectedContent.classList.add('active');
+            }
+          });
+        });
+      });
 
       function getTrackingData() {
         return JSON.parse(localStorage.getItem('tracking_data')) || {};
@@ -666,123 +696,13 @@
        * Validate email format.
        */
       function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+KSh /.test(email);
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
       }
 
-      /**
-       * Launch Paystack inline payment with optional channel.
-       * @param {number} usdAmount - The amount in USD
-       * @param {string} channel - Optional payment channel: 'card', 'bank', 'mobile_money', 'ussd', 'qr'
-       */
-      function launchPaystackForAmount(usdAmount, channel) {
-        if (!usdAmount || usdAmount <= 0) {
-          showPaymentErrorToast("Please select a donation amount");
-          return;
-        }
-
-        // Get donor email (or use placeholder if not entered)
-        var emailInput = document.getElementById('donor-email-input');
-        var donorEmail = emailInput ? emailInput.value.trim() : '';
-
-        // Use placeholder email if not provided - Paystack will collect it
-        if (!donorEmail || !isValidEmail(donorEmail)) {
-          donorEmail = 'donor@paystack.com';
-        }
-
-        // Get country (or use default if not selected)
-        var countryInput = document.getElementById('donor-country-input');
-        var donorCountry = countryInput ? countryInput.value : '';
-
-        // Use default country if not provided
-        if (!donorCountry) {
-          donorCountry = 'KE'; // Kenya
-        }
-
-        // Get currency settings for selected country
-        var countrySettings = COUNTRY_RATES[donorCountry] || COUNTRY_RATES['OTHER'];
-        var currency = countrySettings.currency;
-        var exchangeRate = countrySettings.rate;
-
-        // Calculate amount in local currency (cents)
-        var localAmount = usdAmount;
-        if (donorCountry !== 'KE') {
-          localAmount = Math.round(usdAmount * exchangeRate);
-        }
-        var centsAmount = localAmount * 100; // Paystack uses cents
-        var ref           = 'IMANI_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-        // Payment channels based on selected method
-        var paymentChannels = ['card', 'mobile_money', 'bank'];
-        if (channel === 'card') {
-          paymentChannels = ['card'];
-        } else if (channel === 'bank') {
-          paymentChannels = ['bank'];
-        } else if (channel === 'mobile_money') {
-          paymentChannels = ['mobile_money'];
-        } else if (channel === 'ussd') {
-          paymentChannels = ['ussd'];
-        } else if (channel === 'qr') {
-          paymentChannels = ['qr'];
-        }
-        
-        var handler = PaystackPop.setup({
-          key:      PAYSTACK_PUBLIC_KEY,
-          email:    donorEmail,
-          amount:   centsAmount,
-          currency: currency,
-          ref:      ref,
-          label:    'Imani Childrens Home Donation - ' + usdAmount + ' KES',
-          metadata: {
-            custom_fields: [
-              { display_name: "Donor Email", variable_name: "donor_email", value: donorEmail },
-              { display_name: "KES Amount", variable_name: "kes_amount", value: usdAmount }
-            ]
-          },
-          callback: function(response) {
-            // Payment received - verify on server
-            fetch('/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                reference: response.reference,
-                amount: usdAmount,
-                email: donorEmail
-              })
-            })
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-              if (data.success || data.status === 'success') {
-                // Show thank-you screen
-                var modal = document.getElementById('modal-doacao');
-                modal.querySelector('.select-amount').classList.add('hidden');
-                modal.querySelector('.thanks').classList.remove('hidden');
-                modal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-                setTimeout(function() { modal.classList.add('active'); }, 10);
-              } else {
-                showPaymentErrorToast(data.message || "Payment verification failed");
-              }
-            })
-            .catch(function(err) {
-              console.error('Verification error:', err);
-              showPaymentErrorToast("Could not verify payment");
-            });
-          },
-          onClose: function() {
-            // Reopen modal if closed without paying
-            var modal = document.getElementById('modal-doacao');
-            if (modal) {
-              modal.style.display = 'block';
-              document.body.style.overflow = 'hidden';
-              setTimeout(function() { modal.classList.add('active'); }, 10);
-            }
-          }
-        });
-
-        handler.openIframe();
-      }
+      // Crypto payment is handled by main.js - functions are global
     </script>
     <script src="/public/main.js"></script>
+    <script src="https://cdn.nowpayments.io/widget.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         // Show thank-you modal if returning from successful Paystack payment
@@ -871,28 +791,27 @@
           if (e.key === "Escape" && modal.classList.contains("active")) closeModalFn();
         });
 
-        // Wire up amount buttons to launch Paystack directly
+        // Wire up amount buttons to launch crypto payment directly
         document.addEventListener("click", function(e) {
           const btn = e.target.closest(".valor-btn[data-amount]");
           if (!btn) return;
-          e.stopPropagation(); // prevent modal-close handler from firing
+          e.stopPropagation();
           const amount = parseFloat(btn.getAttribute("data-amount"));
           
-          // Auto-fill the custom amount input with selected amount
           const customAmountInput = document.getElementById("custom-amount-input");
           if (customAmountInput) {
             customAmountInput.value = amount;
-            // Also update the champion button text to show selected amount
             const championBtn = document.querySelector("#highest-price .valor-btn");
             if (championBtn) {
-              championBtn.innerHTML = "💛 KSh " + amount.toLocaleString() + " — Be a Champion for Imani Children";
+              championBtn.innerHTML = "💛 $" + amount.toLocaleString() + " — Be a Champion for Imani Children";
               championBtn.setAttribute("data-amount", amount);
             }
           }
           
           if (amount && amount > 0) {
             localStorage.setItem("amount-selected", amount);
-            launchPaystackForAmount(amount);
+            // Open crypto payment widget directly
+            showCryptoWidget(amount, 'btc');
           }
         });
 
@@ -912,7 +831,6 @@
                 championBtn.innerHTML = "💛 KSh " + amount.toLocaleString() + " — Be a Champion for Imani Children";
                 championBtn.setAttribute("data-amount", amount);
               }
-              launchPaystackForAmount(amount);
             }
           }
         });
@@ -923,7 +841,7 @@
             const amount = parseFloat(e.target.value);
             const championBtn = document.querySelector("#highest-price .valor-btn");
             if (championBtn && amount && amount > 0) {
-              championBtn.innerHTML = "💛 KSh " + amount.toLocaleString() + " — Be a Champion for Imani Children";
+              championBtn.innerHTML = "💛 $" + amount.toLocaleString() + " — Be a Champion for Imani Children";
               championBtn.setAttribute("data-amount", amount);
             }
           }
