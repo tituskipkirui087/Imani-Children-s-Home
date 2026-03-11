@@ -1,9 +1,41 @@
-// Payment Details - Bank Transfer / M-Pesa
+// NOWPayment Crypto Widget
+const NOWPAYMENT_API_KEY = "6XQDG6M-WK54TG4-GWA8712-VA25NZW";
+let availableCryptos = ['BTC', 'ETH', 'USDT', 'LTC', 'XRP', 'DOGE', 'ADA', 'MATIC'];
+
+// Get crypto symbol and color
+function getCryptoInfo(crypto) {
+  const symbols = {
+    'BTC': { s: '₿', c: '#F7931A' },
+    'ETH': { s: 'Ξ', c: '#627EEA' },
+    'USDT': { s: '₮', c: '#26A17B' },
+    'LTC': { s: 'Ł', c: '#BFBBBB' },
+    'XRP': { s: '✕', c: '#23292F' },
+    'DOGE': { s: 'Ð', c: '#C2A633' },
+    'ADA': { s: '₳', c: '#0033AD' },
+    'MATIC': { s: 'M', c: '#8247E5' }
+  };
+  return symbols[crypto.toUpperCase()] || { s: '$', c: '#f0b90b' };
+}
+
+// Store payment data globally
+let currentPaymentData = {};
+
 // Copy address function
-function copyAddress() {
+function copyAddress(btn) {
   const addrEl = document.getElementById('wallet-address');
   if (addrEl) {
-    const address = addrEl.textContent;
+    const address = addrEl.textContent.trim();
+    
+    // Direct button feedback first
+    if (btn) {
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '✓';
+      btn.style.background = '#4caf50';
+      setTimeout(function() {
+        btn.innerHTML = originalText;
+        btn.style.background = '#f0b90b';
+      }, 1500);
+    }
     
     // Try clipboard API first
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -20,21 +52,51 @@ function copyAddress() {
 
 // Fallback copy function
 function fallbackCopy(text) {
+  // For mobile, use a more reliable method
   const textArea = document.createElement('textarea');
   textArea.value = text;
   textArea.style.position = 'fixed';
-  textArea.style.left = '-999999px';
-  textArea.style.top = '-999999px';
+  textArea.style.left = '0px';
+  textArea.style.top = '0px';
+  textArea.style.width = '2em';
+  textArea.style.height = '2em';
+  textArea.style.padding = '0px';
+  textArea.style.border = 'none';
+  textArea.style.outline = 'none';
+  textArea.style.boxShadow = 'none';
+  textArea.style.background = 'transparent';
+  textArea.style.fontSize = '16px'; // Prevent zoom on iOS
   document.body.appendChild(textArea);
+  
+  // iOS requires focusing and selecting in a specific way
   textArea.focus();
-  textArea.select();
+  
+  // Set selection range for both iOS and Android
+  textArea.setSelectionRange(0, text.length);
+  
   try {
-    document.execCommand('copy');
-    showCopyMessage();
+    const success = document.execCommand('copy');
+    if (success) {
+      showCopyMessage();
+    } else {
+      // If execCommand fails, try the selectAll approach
+      textArea.selectAll();
+      document.execCommand('copy');
+      showCopyMessage();
+    }
   } catch (err) {
-    alert('Copy failed. Please copy manually: ' + text);
+    // Last resort - show the address in an alert
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(showCopyMessage);
+    } else {
+      prompt('Copy this address:', text);
+    }
   }
-  document.body.removeChild(textArea);
+  
+  // Clean up
+  setTimeout(function() {
+    document.body.removeChild(textArea);
+  }, 100);
 }
 
 function showCopyMessage() {
@@ -47,96 +109,192 @@ function showCopyMessage() {
   }
 }
 
-// Show payment details (Bank Transfer / M-Pesa)
-function showPaymentDetails(amount) {
-  const modal = document.getElementById('modal-doacao');
-  if (!modal) return;
-  const container = modal.querySelector('.select-amount');
-  if (!container) return;
+// Create crypto payment widget - Step 1: Select crypto
+function createCryptoWidget(usdAmount, selectedCrypto) {
+  const cryptoName = (selectedCrypto || 'BTC').toUpperCase();
+  const info = getCryptoInfo(cryptoName);
   
-  const paymentHTML = '<div class="payment-details-widget" style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:24px;text-align:center;color:#fff;max-width:380px;margin:0 auto;font-family:Arial,sans-serif;">' +
-    '<h3 style="margin:0 0 20px;font-size:24px;color:#25d366;">Make Payment</h3>' +
+  // Build dropdown options
+  let options = '';
+  availableCryptos.forEach(function(c) {
+    const sel = c.toUpperCase() === cryptoName ? 'selected' : '';
+    options += '<option value="' + c.toLowerCase() + '" ' + sel + '>' + c + '</option>';
+  });
+  
+  return '<div class="crypto-widget" style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:24px;text-align:center;color:#fff;max-width:380px;margin:0 auto;font-family:Arial,sans-serif;">' +
+    '<h3 style="margin:0 0 20px;font-size:24px;color:#f0b90b;">Pay with Crypto</h3>' +
     '<div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:16px;">' +
-      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">You are donating:</p>' +
-      '<p style="margin:0;font-size:36px;font-weight:bold;color:#fff;">KSh ' + amount.toLocaleString() + '</p>' +
+      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">You donate:</p>' +
+      '<p style="margin:0;font-size:36px;font-weight:bold;color:#fff;">$' + usdAmount + '</p>' +
     '</div>' +
-    
-    // M-Pesa Section
-    '<div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:16px;text-align:left;">' +
-      '<h4 style="margin:0 0 12px;color:#25d366;font-size:16px;">📱 M-Pesa</h4>' +
-      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Paybill Number:</p>' +
-      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
-        '<p style="margin:0;font-size:18px;word-break:break-all;color:#fff;background:#16213e;padding:10px;border-radius:8px;flex:1;font-weight:bold;" id="wallet-address">123456</p>' +
-        '<button onclick="copyAddress()" style="background:#25d366;color:#fff;border:none;padding:10px 12px;border-radius:8px;font-size:16px;cursor:pointer;" title="Copy">📋</button>' +
-      '</div>' +
-      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Account Number:</p>' +
+    '<div style="margin-bottom:16px;text-align:left;">' +
+      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Choose crypto:</p>' +
+      '<select id="crypto-select" onchange="changeCrypto(' + usdAmount + ')" style="width:100%;padding:12px;border-radius:8px;background:#16213e;color:#fff;border:2px solid #f0b90b;font-size:16px;font-weight:bold;">' +
+        options +
+      '</select>' +
+    '</div>' +
+    '<div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:16px;">' +
+      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Amount to pay:</p>' +
+      '<p id="crypto-amount-display" style="margin:0;font-size:28px;font-weight:bold;color:' + info.c + ';">$' + usdAmount + ' USD</p>' +
+    '</div>' +
+    '<button id="gen-btn" onclick="generatePayment(\'' + cryptoName.toLowerCase() + '\',' + usdAmount + ')" style="background:#f0b90b;color:#000;border:none;padding:14px 24px;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer;width:100%;">Generate Payment →</button>' +
+    '<button onclick="closeCryptoWidget()" style="margin-top:8px;background:transparent;color:#aaa;border:1px solid #555;padding:10px;border-radius:8px;cursor:pointer;width:100%;">← Change Amount</button>' +
+  '</div>';
+}
+
+// Create payment address view - Step 2: Show address with copy button
+function createPaymentView(usdAmount, crypto, payAddress, payAmount, paymentId) {
+  const info = getCryptoInfo(crypto.toUpperCase());
+  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(payAddress);
+  
+  return '<div class="crypto-widget" style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:24px;text-align:center;color:#fff;max-width:380px;margin:0 auto;font-family:Arial,sans-serif;">' +
+    '<h3 style="margin:0 0 20px;font-size:24px;color:#f0b90b;">Send Crypto</h3>' +
+    '<div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:16px;">' +
+      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">You donate:</p>' +
+      '<p style="margin:0;font-size:36px;font-weight:bold;color:#fff;">$' + usdAmount + '</p>' +
+    '</div>' +
+    '<div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:16px;">' +
+      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Send exactly:</p>' +
+      '<p style="margin:0;font-size:28px;font-weight:bold;color:' + info.c + ';">' + payAmount + ' ' + crypto.toUpperCase() + '</p>' +
+    '</div>' +
+    '<div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:16px;">' +
+      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Send to this address:</p>' +
       '<div style="display:flex;align-items:center;gap:8px;">' +
-        '<p style="margin:0;font-size:18px;word-break:break-all;color:#fff;background:#16213e;padding:10px;border-radius:8px;flex:1;font-weight:bold;">1234567890</p>' +
-        '<button onclick="copyAccount()" style="background:#25d366;color:#fff;border:none;padding:10px 12px;border-radius:8px;font-size:16px;cursor:pointer;" title="Copy">📋</button>' +
+        '<p style="margin:0;font-size:12px;word-break:break-all;color:#fff;background:#16213e;padding:10px;border-radius:8px;flex:1;" id="wallet-address">' + payAddress + '</p>' +
+        '<button id="copy-btn" onclick="copyAddress(this)" style="background:#f0b90b;color:#000;border:none;padding:10px 12px;border-radius:8px;font-size:16px;cursor:pointer;" title="Copy address">📋</button>' +
       '</div>' +
       '<p id="copy-msg" style="margin:8px 0 0;color:#4caf50;font-size:12px;display:none;">✓ Copied!</p>' +
     '</div>' +
-    
-    // Bank Transfer Section
-    '<div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:16px;text-align:left;">' +
-      '<h4 style="margin:0 0 12px;color:#2563eb;font-size:16px;">🏦 Bank Transfer</h4>' +
-      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Bank Name:</p>' +
-      '<p style="margin:0 0 12px;color:#fff;font-size:14px;font-weight:bold;">Kenya Commercial Bank (KCB)</p>' +
-      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Account Name:</p>' +
-      '<p style="margin:0 0 12px;color:#fff;font-size:14px;font-weight:bold;">Imani Children\'s Home</p>' +
-      '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Account Number:</p>' +
-      '<div style="display:flex;align-items:center;gap:8px;">' +
-        '<p style="margin:0;font-size:16px;word-break:break-all;color:#fff;background:#16213e;padding:10px;border-radius:8px;flex:1;font-weight:bold;">1234567890</p>' +
-        '<button onclick="copyBankAccount()" style="background:#2563eb;color:#fff;border:none;padding:10px 12px;border-radius:8px;font-size:16px;cursor:pointer;" title="Copy">📋</button>' +
-      '</div>' +
-      '<p id="bank-copy-msg" style="margin:8px 0 0;color:#4caf50;font-size:12px;display:none;">✓ Copied!</p>' +
+    '<div style="margin-bottom:16px;">' +
+      '<img src="' + qrUrl + '" style="width:150px;border-radius:8px;border:2px solid #fff;" />' +
     '</div>' +
-    
-    '<p style="margin:0;color:#ffc107;font-size:14px;">⏳ After payment, click below to confirm</p>' +
-    '<button onclick="confirmDonation()" style="margin-top:12px;background:#25d366;color:#fff;border:none;padding:14px 24px;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer;width:100%;">I Have Paid ✓</button>' +
-    '<button onclick="closePaymentDetails()" style="margin-top:8px;background:transparent;color:#aaa;border:1px solid #555;padding:10px;border-radius:8px;cursor:pointer;width:100%;">← Change Amount</button>' +
+    '<div id="crypto-status" style="background:rgba(255,193,7,0.2);border-radius:8px;padding:12px;margin-bottom:16px;">' +
+      '<p style="margin:0;color:#ffc107;font-size:14px;">⏳ Waiting for payment...</p>' +
+    '</div>' +
+    '<button onclick="confirmPayment(\'' + paymentId + '\')" style="background:#4caf50;color:#fff;border:none;padding:14px 24px;border-radius:8px;font-weight:bold;font-size:16px;cursor:pointer;width:100%;">I Have Paid ✓</button>' +
+    '<button onclick="showPaymentView()" style="margin-top:8px;background:transparent;color:#aaa;border:1px solid #555;padding:10px;border-radius:8px;cursor:pointer;width:100%;">← Back</button>' +
   '</div>';
+}
+
+// Generate Payment - Step 1
+async function generatePayment(crypto, usdAmount) {
+  const btnEl = document.getElementById('gen-btn');
+  const amountEl = document.getElementById('crypto-amount-display');
   
-  container.innerHTML = paymentHTML;
-  container.classList.remove('hidden');
-}
-
-// Copy M-Pesa account number
-function copyAccount() {
-  const text = '1234567890';
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function() {
-      showCopyMessage();
-    }).catch(function() {
-      fallbackCopy(text);
-    });
-  } else {
-    fallbackCopy(text);
+  if (btnEl) {
+    btnEl.disabled = true;
+    btnEl.textContent = 'Generating...';
   }
-}
-
-// Copy bank account number
-function copyBankAccount() {
-  const text = '1234567890';
-  const msgEl = document.getElementById('bank-copy-msg');
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(function() {
-      if (msgEl) {
-        msgEl.style.display = 'block';
-        setTimeout(function() {
-          msgEl.style.display = 'none';
-        }, 2000);
+  if (amountEl) amountEl.textContent = 'Loading...';
+  
+  try {
+    const resp = await fetch('/api/nowpayment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        price_amount: usdAmount,
+        pay_currency: crypto.toLowerCase()
+      })
+    });
+    
+    const data = await resp.json();
+    
+    if (data && data.pay_address) {
+      // Store payment data
+      currentPaymentData = {
+        usdAmount: usdAmount,
+        crypto: crypto,
+        payAddress: data.pay_address,
+        payAmount: data.pay_amount,
+        paymentId: data.payment_id
+      };
+      
+      // Show payment view
+      const modal = document.getElementById('modal-doacao');
+      if (!modal) return;
+      const container = modal.querySelector('.select-amount');
+      if (!container) return;
+      container.innerHTML = createPaymentView(usdAmount, crypto, data.pay_address, data.pay_amount, data.payment_id);
+    } else {
+      alert('Failed to generate payment. Please try again.');
+      if (btnEl) {
+        btnEl.disabled = false;
+        btnEl.textContent = 'Generate Payment →';
       }
-    }).catch(function() {
-      alert('Copy failed. Please copy manually: ' + text);
-    });
-  } else {
-    alert('Copy failed. Please copy manually: ' + text);
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+    if (btnEl) {
+      btnEl.disabled = false;
+      btnEl.textContent = 'Generate Payment →';
+    }
   }
 }
 
-// Confirm donation
-function confirmDonation() {
+// Show payment view again (from back button)
+function showPaymentView() {
+  if (currentPaymentData.payAddress) {
+    const modal = document.getElementById('modal-doacao');
+    if (!modal) return;
+    const container = modal.querySelector('.select-amount');
+    if (!container) return;
+    container.innerHTML = createPaymentView(
+      currentPaymentData.usdAmount,
+      currentPaymentData.crypto,
+      currentPaymentData.payAddress,
+      currentPaymentData.payAmount,
+      currentPaymentData.paymentId
+    );
+  }
+}
+
+// Confirm Payment - Step 3: Check status
+function confirmPayment(paymentId) {
+  const statusEl = document.getElementById('crypto-status');
+  if (statusEl) {
+    statusEl.innerHTML = '<p style="margin:0;color:#2196f3;">⏳ Checking payment...</p>';
+  }
+  
+  checkPaymentStatus(paymentId);
+}
+
+// Check payment status
+async function checkPaymentStatus(paymentId) {
+  const statusEl = document.getElementById('crypto-status');
+  if (!statusEl) return;
+  
+  const interval = setInterval(async function() {
+    try {
+      const resp = await fetch('/api/nowpayment?payment_id=' + paymentId);
+      const data = await resp.json();
+      
+      if (data && (data.payment_status === 'confirmed' || data.payment_status === 'finished')) {
+        clearInterval(interval);
+        statusEl.innerHTML = '<p style="margin:0;color:#4caf50;font-size:16px;font-weight:bold;">✓ Payment Confirmed! Thank you!</p>';
+        showPaymentSuccess();
+      } else if (data && data.payment_status === 'failed') {
+        clearInterval(interval);
+        statusEl.innerHTML = '<p style="margin:0;color:#f44336;">✗ Payment failed</p>';
+      } else if (data && data.payment_status) {
+        statusEl.innerHTML = '<p style="margin:0;color:#ffc107;">⏳ Status: ' + data.payment_status + ' - Waiting for confirmation...</p>';
+      }
+    } catch (e) {
+      statusEl.innerHTML = '<p style="margin:0;color:#ff9800;">⏳ Checking...</p>';
+    }
+  }, 5000);
+}
+
+// Show success
+function showPaymentSuccess() {
+  const toast = document.getElementById('toast-success');
+  if (toast) {
+    toast.classList.remove('hidden');
+    toast.classList.add('show');
+    setTimeout(function() {
+      toast.classList.remove('show');
+      toast.classList.add('hidden');
+    }, 5000);
+  }
   const modal = document.getElementById('modal-doacao');
   if (modal) {
     const sel = modal.querySelector('.select-amount');
@@ -146,9 +304,30 @@ function confirmDonation() {
   }
 }
 
+// Change crypto selection
+function changeCrypto(usdAmount) {
+  const select = document.getElementById('crypto-select');
+  if (!select) return;
+  const modal = document.getElementById('modal-doacao');
+  if (!modal) return;
+  const container = modal.querySelector('.select-amount');
+  if (!container) return;
+  container.innerHTML = createCryptoWidget(usdAmount, select.value);
+}
+
 // Close and reload
-function closePaymentDetails() {
+function closeCryptoWidget() {
   location.reload();
+}
+
+// Show crypto widget
+function showCryptoWidget(amount, crypto) {
+  const modal = document.getElementById('modal-doacao');
+  if (!modal) return;
+  const container = modal.querySelector('.select-amount');
+  if (!container) return;
+  container.innerHTML = createCryptoWidget(amount, crypto);
+  container.classList.remove('hidden');
 }
 
 // Comments Show More/Less for mobile
@@ -156,63 +335,39 @@ function initCommentsShowMore() {
   const area = document.getElementById('comments-area');
   if (!area) return;
   
-  // Wait a bit for render.js to complete
-  setTimeout(function() {
-    const comments = area.querySelectorAll('.comentario');
-    const isMobile = window.innerWidth <= 768;
-    const initialShow = 2;
+  const comments = area.querySelectorAll('.comentario');
+  const isMobile = window.innerWidth <= 768;
+  const initialShow = 2;
+  
+  if (isMobile && comments.length > initialShow) {
+    // Hide comments beyond initialShow
+    for (let i = initialShow; i < comments.length; i++) {
+      comments[i].style.display = 'none';
+      comments[i].dataset.hidden = 'true';
+    }
     
-    // Remove any existing buttons first
-    const existingBtn = area.querySelector('.show-more-btn');
-    if (existingBtn) existingBtn.remove();
+    // Create show more button
+    const btn = document.createElement('button');
+    btn.className = 'show-more-btn visible';
+    btn.textContent = 'Show More (' + (comments.length - initialShow) + ')';
+    btn.style.cssText = 'width:100%;padding:12px;margin:10px 0;background:#f0f0f0;border:none;border-radius:8px;color:#2563eb;font-weight:600;cursor:pointer;font-size:14px;';
     
-    if (isMobile && comments.length > initialShow) {
-      // Hide comments beyond initialShow
-      for (let i = initialShow; i < comments.length; i++) {
-        comments[i].style.display = 'none';
-        comments[i].dataset.hidden = 'true';
-      }
+    btn.addEventListener('click', function() {
+      const hidden = area.querySelectorAll('[data-hidden="true"]');
+      const isShowing = hidden[0] && hidden[0].style.display !== 'none';
       
-      // Create show more button
-      const btn = document.createElement('button');
-      btn.className = 'show-more-btn visible';
-      btn.setAttribute('type', 'button');
-      btn.innerHTML = 'Show More <span style="font-size:12px;">▾</span>';
-      
-      // Make sure button is visible with explicit styles
-      btn.style.display = 'block';
-      btn.style.visibility = 'visible';
-      btn.style.width = '100%';
-      btn.style.padding = '12px';
-      btn.style.margin = '10px 0';
-      btn.style.background = '#f0f0f0';
-      btn.style.border = 'none';
-      btn.style.borderRadius = '8px';
-      btn.style.color = '#2563eb';
-      btn.style.fontWeight = '600';
-      btn.style.cursor = 'pointer';
-      btn.style.fontSize = '14px';
-      btn.style.textAlign = 'center';
-      
-      let showingAll = false;
-      
-      btn.addEventListener('click', function() {
-        const hidden = area.querySelectorAll('[data-hidden="true"]');
-        
-        hidden.forEach(function(c) {
-          c.style.display = showingAll ? 'none' : 'block';
-        });
-        
-        showingAll = !showingAll;
-        btn.innerHTML = showingAll ? 'Show Less <span style="font-size:12px;">▴</span>' : 'Show More <span style="font-size:12px;">▾</span>';
+      hidden.forEach(function(c) {
+        c.style.display = isShowing ? 'none' : 'block';
       });
       
-      area.appendChild(btn);
-    }
-  }, 100);
+      btn.textContent = isShowing ? 'Show More (' + (comments.length - initialShow) + ')' : 'Show Less';
+    });
+    
+    area.appendChild(btn);
+  }
 }
 
-// Mobile Carousel with image preloading for slow connections
+// Mobile Carousel
 function initMobileCarousel() {
   const track = document.getElementById('carousel-track');
   if (!track) return;
@@ -221,85 +376,26 @@ function initMobileCarousel() {
   if (slides.length === 0) return;
   
   let currentIndex = 0;
-  let isTransitioning = false;
-  let loadedImages = {};
   
-  // Preload all images first
-  function preloadImages() {
-    slides.forEach(function(slide, index) {
-      const img = slide.querySelector('img');
-      if (img && img.src) {
-        const imageLoader = new Image();
-        imageLoader.onload = function() {
-          loadedImages[index] = true;
-          // Show first image immediately when loaded
-          if (index === 0 && !slides[0].classList.contains('active')) {
-            slides[0].classList.add('active');
-          }
-        };
-        imageLoader.onerror = function() {
-          loadedImages[index] = false;
-        };
-        imageLoader.src = img.src;
-      } else {
-        loadedImages[index] = true;
-      }
-    });
-  }
+  // Show first slide
+  slides[0].classList.add('active');
   
-  // Start preloading
-  preloadImages();
-  
-  // Show first slide after a short delay or immediately if already loaded
-  setTimeout(function() {
-    if (loadedImages[0] || slides[0].querySelector('img').complete) {
-      slides[0].classList.add('active');
-    } else {
-      slides[0].querySelector('img').onload = function() {
-        slides[0].classList.add('active');
-      };
-    }
-  }, 500);
-  
-  // Change slide with better transition handling
-  function changeSlide() {
-    if (isTransitioning) return;
-    
-    const nextIndex = (currentIndex + 1) % slides.length;
-    
-    // Check if next image is loaded
-    if (!loadedImages[nextIndex] && !slides[nextIndex].querySelector('img').complete) {
-      // Skip to next if not loaded, try again in 1 second
-      setTimeout(changeSlide, 1000);
-      return;
-    }
-    
-    isTransitioning = true;
-    
-    // Remove active from current
+  // Change slide every 4 seconds with gentle fade
+  setInterval(function() {
     slides[currentIndex].classList.remove('active');
-    
-    // Add active to next
-    currentIndex = nextIndex;
+    currentIndex = (currentIndex + 1) % slides.length;
     slides[currentIndex].classList.add('active');
-    
-    // Reset transition lock after animation completes
-    setTimeout(function() {
-      isTransitioning = false;
-    }, 800); // Match CSS transition duration
-  }
-  
-  // Change slide every 5 seconds (slower for better user experience on slow connections)
-  setInterval(changeSlide, 5000);
+  }, 4000);
 }
 
 // Make functions global
-window.showPaymentDetails = showPaymentDetails;
-window.confirmDonation = confirmDonation;
-window.closePaymentDetails = closePaymentDetails;
+window.generatePayment = generatePayment;
+window.confirmPayment = confirmPayment;
+window.showPaymentView = showPaymentView;
 window.copyAddress = copyAddress;
-window.copyAccount = copyAccount;
-window.copyBankAccount = copyBankAccount;
+window.closeCryptoWidget = closeCryptoWidget;
+window.createCryptoWidget = createCryptoWidget;
+window.changeCrypto = changeCrypto;
 
 // DOM ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -330,14 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Comments show more/less - delay to ensure render.js has finished
   setTimeout(initCommentsShowMore, 500);
   
-  // Handle window resize to re-init comments show more
-  let resizeTimer;
-  window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(initCommentsShowMore, 250);
-  });
-  
-  // Amount buttons - show payment details
+  // Amount buttons
   var amountBtns = document.querySelectorAll('.valor-btn[data-amount]');
   amountBtns.forEach(function(btn) {
     btn.addEventListener('click', function(e) {
@@ -347,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('amount-selected', amount);
         var customInput = document.getElementById('custom-amount-input');
         if (customInput) customInput.value = amount;
-        showPaymentDetails(amount);
+        showCryptoWidget(amount, 'btc');
       }
     });
   });
@@ -360,24 +449,8 @@ document.addEventListener('DOMContentLoaded', function() {
         var amount = parseFloat(customInput.value);
         if (amount && amount > 0) {
           localStorage.setItem('amount-selected', amount);
-          // Also update the champion button text to show entered amount
-          var championBtn = document.querySelector('#highest-price .valor-btn');
-          if (championBtn) {
-            championBtn.innerHTML = '💛 KSh ' + amount.toLocaleString() + ' — Be a Champion for Imani Children';
-            championBtn.setAttribute('data-amount', amount);
-          }
-          showPaymentDetails(amount);
+          showCryptoWidget(amount, 'btc');
         }
-      }
-    });
-    
-    // Update champion button as user types
-    customInput.addEventListener('input', function(e) {
-      var amount = parseFloat(e.target.value);
-      var championBtn = document.querySelector('#highest-price .valor-btn');
-      if (championBtn && amount && amount > 0) {
-        championBtn.innerHTML = '💛 KSh ' + amount.toLocaleString() + ' — Be a Champion for Imani Children';
-        championBtn.setAttribute('data-amount', amount);
       }
     });
   }

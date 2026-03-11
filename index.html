@@ -246,11 +246,11 @@
               <div class="valores-container">
                 <div class="valor-arrecadado">
                   <span class="valor-label">Raised</span>
-                  <span class="valor-numero" id="amount-collected">KSh 1,000,000</span>
+                  <span class="valor-numero" id="amount-collected">$10,000</span>
                 </div>
                 <div class="valor-meta">
                   <span class="valor-label">Goal</span>
-                  <span class="valor-numero" id="amount-goal">KSh 10,000,000</span>
+                  <span class="valor-numero" id="amount-goal">$100,000</span>
                 </div>
               </div>
               <div class="barra-progresso-container">
@@ -468,7 +468,7 @@
         <div class="select-amount">
           <h2 id="donate-modal-title" style="color: #2563eb;"></h2>
           <p id="donate-modal-sub-title" class="modal-subtitulo"></p>
-          <p class="modal-click-hint" style="font-size:13px;color:#6b7280;margin-bottom:8px;">💡 Click an amount below to see payment details</p>
+          <p class="modal-click-hint" style="font-size:13px;color:#6b7280;margin-bottom:8px;">💡 Click an amount below, then select a crypto to pay</p>
 
           <!-- Donor email input -->
           <div class="donor-email-wrap" style="margin-bottom:14px;">
@@ -492,34 +492,34 @@
           </div>
 
           <div class="valores-doacao" id="prices-area">
-            <button class="valor-item valor-btn" data-amount="1000" type="button">KSh 1,000</button>
-            <button class="valor-item valor-btn" data-amount="2500" type="button">KSh 2,500 <span class="badge-popular">Popular</span></button>
-            <button class="valor-item valor-btn" data-amount="5000" type="button">KSh 5,000</button>
-            <button class="valor-item valor-btn" data-amount="7500" type="button">KSh 7,500</button>
-            <button class="valor-item valor-btn" data-amount="10000" type="button">KSh 10,000</button>
-            <button class="valor-item valor-btn" data-amount="15000" type="button">KSh 15,000</button>
-            <button class="valor-item valor-btn" data-amount="20000" type="button">KSh 20,000</button>
-            <button class="valor-item valor-btn" data-amount="25000" type="button">KSh 25,000</button>
+            <button class="valor-item valor-btn" data-amount="10" type="button">$10</button>
+            <button class="valor-item valor-btn" data-amount="25" type="button">$25 <span class="badge-popular">Popular</span></button>
+            <button class="valor-item valor-btn" data-amount="50" type="button">$50</button>
+            <button class="valor-item valor-btn" data-amount="75" type="button">$75</button>
+            <button class="valor-item valor-btn" data-amount="100" type="button">$100</button>
+            <button class="valor-item valor-btn" data-amount="150" type="button">$150</button>
+            <button class="valor-item valor-btn" data-amount="200" type="button">$200</button>
+            <button class="valor-item valor-btn" data-amount="250" type="button">$250</button>
           </div>
           <!-- Custom amount input that auto-fills when amount is selected -->
           <div class="custom-amount-wrap" style="margin: 16px 0;">
             <input
               type="number"
               id="custom-amount-input"
-              placeholder="Or enter custom amount (KSh)"
+              placeholder="Or enter custom amount (USD)"
               min="1"
               style="width:100%;padding:12px 14px;border:2px solid #d1d5db;border-radius:8px;font-size:16px;outline:none;box-sizing:border-box;text-align:center;font-weight:bold;"
             />
             <p id="custom-amount-error" style="color:#e74c3c;font-size:12px;margin:4px 0 0;display:none;">Please enter a valid amount.</p>
           </div>
           <div class="valor-item-grande" id="highest-price">
-            <button class="valor-btn" data-amount="50000" type="button" style="background:none;border:none;width:100%;font-size:inherit;font-weight:inherit;color:inherit;cursor:pointer;">
-              💛 KSh 50,000 — Be a Champion for Imani Children
+            <button class="valor-btn" data-amount="500" type="button" style="background:none;border:none;width:100%;font-size:inherit;font-weight:inherit;color:inherit;cursor:pointer;">
+              💛 $500 — Be a Champion for Imani Children
             </button>
           </div>
           <div class="modal-footer">
-            <p style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:8px;">🔒 Secure payment via M-Pesa or Bank Transfer</p>
-            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:16px 0 8px;">💳 M-Pesa Paybill: <strong>123456</strong> | Account: <strong>1234567890</strong></p>
+            <p style="font-size:12px;color:#9ca3af;text-align:center;margin-bottom:8px;">🔒Secure crypto payments via NOWPayments</p>
+            <p style="font-size:12px;color:#9ca3af;text-align:center;margin:16px 0 8px;">💳 We accept: Bitcoin, Ethereum, USDT, BNB, Solana, TRON</p>
           </div>
         </div>
         <div class="thanks text-center p-6 bg-white rounded-lg shadow-md max-w-lg mx-auto hidden"
@@ -811,8 +811,8 @@
           
           if (amount && amount > 0) {
             localStorage.setItem("amount-selected", amount);
-            // Show payment details (bank transfer / M-Pesa)
-            showPaymentDetails(amount);
+            // Open crypto payment widget directly
+            showCryptoWidget(amount, 'btc');
           }
         });
 

@@ -31,7 +31,7 @@ function renderPage() {
     }
 
     // comentarios
-    if (window.COMENTARIOS && Array.isArray(COMENTARIOS)) {
+    if (window.COMENTARIOS && Array.isArray(COMMENTARIOS)) {
       const area = document.getElementById('comments-area');
       const isMobile = window.innerWidth <= 768;
       const initialShow = 2; // Show 2 comments on mobile initially
@@ -81,7 +81,21 @@ function renderPage() {
         area.appendChild(div);
       });
 
-      // Note: Show More/Less button is handled by main.js
+      // Add Show More/Less button for mobile
+      if (COMENTARIOS.length > initialShow) {
+        const showMoreBtn = document.createElement('button');
+        showMoreBtn.className = 'show-more-btn' + (isMobile ? ' visible' : '');
+        showMoreBtn.textContent = 'Show More (' + (COMENTARIOS.length - initialShow) + ')';
+        showMoreBtn.addEventListener('click', function() {
+          const hiddenComments = area.querySelectorAll('.comentario[data-hidden="true"]');
+          const isShowing = hiddenComments[0] && hiddenComments[0].style.display !== 'none';
+          hiddenComments.forEach(c => {
+            c.style.display = isShowing ? 'none' : 'block';
+          });
+          this.textContent = isShowing ? 'Show More (' + (COMENTARIOS.length - initialShow) + ')' : 'Show Less';
+        });
+        area.appendChild(showMoreBtn);
+      }
 
       // Add click listeners to likes and views
       document.querySelectorAll('.likes').forEach(likeBtn => {
