@@ -31,7 +31,7 @@ function renderPage() {
     }
 
     // comentarios
-    if (window.COMENTARIOS && Array.isArray(COMMENTARIOS)) {
+    if (window.COMENTARIOS && Array.isArray(COMENTARIOS)) {
       const area = document.getElementById('comments-area');
       const isMobile = window.innerWidth <= 768;
       const initialShow = 2; // Show 2 comments on mobile initially
