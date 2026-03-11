@@ -81,21 +81,7 @@ function renderPage() {
         area.appendChild(div);
       });
 
-      // Add Show More/Less button for mobile
-      if (COMENTARIOS.length > initialShow) {
-        const showMoreBtn = document.createElement('button');
-        showMoreBtn.className = 'show-more-btn' + (isMobile ? ' visible' : '');
-        showMoreBtn.textContent = 'Show More (' + (COMENTARIOS.length - initialShow) + ')';
-        showMoreBtn.addEventListener('click', function() {
-          const hiddenComments = area.querySelectorAll('.comentario[data-hidden="true"]');
-          const isShowing = hiddenComments[0] && hiddenComments[0].style.display !== 'none';
-          hiddenComments.forEach(c => {
-            c.style.display = isShowing ? 'none' : 'block';
-          });
-          this.textContent = isShowing ? 'Show More (' + (COMENTARIOS.length - initialShow) + ')' : 'Show Less';
-        });
-        area.appendChild(showMoreBtn);
-      }
+      // Note: Show More/Less button is handled by main.js
 
       // Add click listeners to likes and views
       document.querySelectorAll('.likes').forEach(likeBtn => {

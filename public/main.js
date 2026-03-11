@@ -294,36 +294,60 @@ function initCommentsShowMore() {
   const area = document.getElementById('comments-area');
   if (!area) return;
   
-  const comments = area.querySelectorAll('.comentario');
-  const isMobile = window.innerWidth <= 768;
-  const initialShow = 2;
-  
-  if (isMobile && comments.length > initialShow) {
-    // Hide comments beyond initialShow
-    for (let i = initialShow; i < comments.length; i++) {
-      comments[i].style.display = 'none';
-      comments[i].dataset.hidden = 'true';
-    }
+  // Wait a bit for render.js to complete
+  setTimeout(function() {
+    const comments = area.querySelectorAll('.comentario');
+    const isMobile = window.innerWidth <= 768;
+    const initialShow = 2;
     
-    // Create show more button
-    const btn = document.createElement('button');
-    btn.className = 'show-more-btn visible';
-    btn.textContent = 'Show More (' + (comments.length - initialShow) + ')';
-    btn.style.cssText = 'width:100%;padding:12px;margin:10px 0;background:#f0f0f0;border:none;border-radius:8px;color:#2563eb;font-weight:600;cursor:pointer;font-size:14px;';
+    // Remove any existing buttons first
+    const existingBtn = area.querySelector('.show-more-btn');
+    if (existingBtn) existingBtn.remove();
     
-    btn.addEventListener('click', function() {
-      const hidden = area.querySelectorAll('[data-hidden="true"]');
-      const isShowing = hidden[0] && hidden[0].style.display !== 'none';
+    if (isMobile && comments.length > initialShow) {
+      // Hide comments beyond initialShow
+      for (let i = initialShow; i < comments.length; i++) {
+        comments[i].style.display = 'none';
+        comments[i].dataset.hidden = 'true';
+      }
       
-      hidden.forEach(function(c) {
-        c.style.display = isShowing ? 'none' : 'block';
+      // Create show more button
+      const btn = document.createElement('button');
+      btn.className = 'show-more-btn visible';
+      btn.setAttribute('type', 'button');
+      btn.textContent = 'Show More (' + (comments.length - initialShow) + ')';
+      
+      // Make sure button is visible with explicit styles
+      btn.style.display = 'block';
+      btn.style.visibility = 'visible';
+      btn.style.width = '100%';
+      btn.style.padding = '12px';
+      btn.style.margin = '10px 0';
+      btn.style.background = '#f0f0f0';
+      btn.style.border = 'none';
+      btn.style.borderRadius = '8px';
+      btn.style.color = '#2563eb';
+      btn.style.fontWeight = '600';
+      btn.style.cursor = 'pointer';
+      btn.style.fontSize = '14px';
+      btn.style.textAlign = 'center';
+      
+      let showingAll = false;
+      
+      btn.addEventListener('click', function() {
+        const hidden = area.querySelectorAll('[data-hidden="true"]');
+        
+        hidden.forEach(function(c) {
+          c.style.display = showingAll ? 'none' : 'block';
+        });
+        
+        showingAll = !showingAll;
+        btn.textContent = showingAll ? 'Show Less' : 'Show More (' + (comments.length - initialShow) + ')';
       });
       
-      btn.textContent = isShowing ? 'Show More (' + (comments.length - initialShow) + ')' : 'Show Less';
-    });
-    
-    area.appendChild(btn);
-  }
+      area.appendChild(btn);
+    }
+  }, 100);
 }
 
 // Mobile Carousel
@@ -384,6 +408,13 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Comments show more/less - delay to ensure render.js has finished
   setTimeout(initCommentsShowMore, 500);
+  
+  // Handle window resize to re-init comments show more
+  let resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(initCommentsShowMore, 250);
+  });
   
   // Amount buttons
   var amountBtns = document.querySelectorAll('.valor-btn[data-amount]');
