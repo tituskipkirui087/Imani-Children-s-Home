@@ -2,6 +2,158 @@
 const NOWPAYMENT_API_KEY = "6XQDG6M-WK54TG4-GWA8712-VA25NZW";
 let availableCryptos = ['BTC', 'ETH', 'USDT', 'LTC', 'XRP', 'DOGE', 'ADA', 'MATIC'];
 
+// ==========================================
+// ROBUST IMAGE LOADING SYSTEM
+// Prevents media disappearing with multiple fallback layers
+// ==========================================
+
+(function() {
+  'use strict';
+  
+  // Fallback image base64 (1x1 transparent pixel)
+  const FALLBACK_IMAGE = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  
+  // Track image loading states to prevent flashing
+  const imageLoadTracker = new Map();
+  
+  // Initialize robust image loading on DOM ready
+  function initRobustImageLoading() {
+    // Set up global image error handler
+    document.addEventListener('error', function(e) {
+      if (e.target.tagName === 'IMG') {
+        handleImageError(e.target);
+      }
+    }, true);
+    
+    // Set up visibility API to pause carousel when tab hidden
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        pauseCarousel();
+      } else {
+        resumeCarousel();
+      }
+    });
+    
+    // Preload critical images immediately
+    preloadCriticalImages();
+    
+    // Set up MutationObserver to handle dynamically added images
+    setupMutationObserver();
+  }
+  
+  // Handle individual image errors with fallback
+  function handleImageError(img) {
+    // Prevent infinite error loops
+    if (img.dataset.errorHandled) return;
+    img.dataset.errorHandled = 'true';
+    
+    // Try to reload from cache first
+    const originalSrc = img.src;
+    if (!originalSrc.includes(FALLBACK_IMAGE)) {
+      // Create a new image to test if it can be loaded
+      const testImg = new Image();
+      testImg.onload = function() {
+        img.src = originalSrc;
+        delete img.dataset.errorHandled;
+      };
+      testImg.onerror = function() {
+        // Use fallback - show placeholder
+        img.src = FALLBACK_IMAGE;
+        img.style.backgroundColor = '#eee';
+        img.style.display = 'inline-block';
+      };
+      testImg.src = originalSrc;
+    }
+  }
+  
+  // Preload all critical above-the-fold images
+  function preloadCriticalImages() {
+    const criticalImages = [
+      '/public/logo.jpeg',
+      '/public/Imani 2.jpg',
+      '/public/imani 1.jpg',
+      '/public/Imani 4.jpg',
+      '/public/Imani 5.jpg'
+    ];
+    
+    criticalImages.forEach(function(src) {
+      const img = new Image();
+      img.src = src;
+    });
+  }
+  
+  // MutationObserver for dynamically added images
+  function setupMutationObserver() {
+    if (!MutationObserver) return;
+    
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        mutation.addedNodes.forEach(function(node) {
+          if (node.nodeType === 1) { // Element node
+            if (node.tagName === 'IMG') {
+              ensureImageLoaded(node);
+            }
+            // Check for nested images
+            if (node.querySelectorAll) {
+              node.querySelectorAll('img').forEach(ensureImageLoaded);
+            }
+          }
+        });
+      });
+    });
+    
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+  
+  // Ensure image is properly loaded before display
+  function ensureImageLoaded(img) {
+    if (img.complete && img.naturalHeight > 0) return;
+    
+    // Add loading indicator
+    img.dataset.loading = 'true';
+    
+    img.addEventListener('load', function() {
+      delete img.dataset.loading;
+      img.style.opacity = '1';
+    }, { once: true });
+    
+    img.addEventListener('error', function() {
+      handleImageError(img);
+    }, { once: true });
+  }
+  
+  // Carousel state management
+  let carouselPaused = false;
+  let carouselInterval = null;
+  
+  function pauseCarousel() {
+    carouselPaused = true;
+    if (carouselInterval) {
+      clearInterval(carouselInterval);
+      carouselInterval = null;
+    }
+  }
+  
+  function resumeCarousel() {
+    if (carouselPaused) {
+      carouselPaused = false;
+      // Restart carousel if needed
+      initMobileCarousel();
+    }
+  }
+  
+  // Expose for external control
+  window.pauseMediaCarousel = pauseCarousel;
+  window.resumeMediaCarousel = resumeCarousel;
+  
+  // Start when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initRobustImageLoading);
+  } else {
+    initRobustImageLoading();
+  }
+})();
+
 // Get crypto symbol and color
 function getCryptoInfo(crypto) {
   const symbols = {
@@ -422,7 +574,7 @@ function initCommentsShowMore() {
   }
 }
 
-// Mobile Carousel - Fixed for slow connections and to prevent flashing
+// Mobile Carousel - Robust version with preloading and visibility handling
 function initMobileCarousel() {
   const track = document.getElementById('carousel-track');
   if (!track) return;
@@ -504,8 +656,23 @@ function initMobileCarousel() {
   
   // Start auto-advance timer
   function startAutoAdvance() {
-    setInterval(changeSlide, 5000);
+    // Store interval ID for pausing
+    window.carouselIntervalId = setInterval(changeSlide, 5000);
   }
+  
+  // Override pause/resume to work with carousel
+  window.pauseMediaCarousel = function() {
+    if (window.carouselIntervalId) {
+      clearInterval(window.carouselIntervalId);
+      window.carouselIntervalId = null;
+    }
+  };
+  
+  window.resumeMediaCarousel = function() {
+    if (!window.carouselIntervalId && allImagesLoaded) {
+      startAutoAdvance();
+    }
+  };
   
   // Initialize - preload images first, then start
   preloadAllImages();
