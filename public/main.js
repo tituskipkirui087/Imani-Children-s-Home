@@ -314,7 +314,7 @@ function createPaymentView(usdAmount, crypto, payAddress, payAmount, paymentId) 
       '<p style="margin:0 0 8px;color:#aaa;font-size:14px;">Send to this address:</p>' +
       '<div style="display:flex;align-items:center;gap:8px;">' +
         '<p style="margin:0;font-size:12px;word-break:break-all;color:#fff;background:#16213e;padding:10px;border-radius:8px;flex:1;" id="wallet-address">' + payAddress + '</p>' +
-        '<button id="copy-btn" onclick="copyAddress(this)" style="background:#f0b90b;color:#000;border:none;padding:10px 12px;border-radius:8px;font-size:16px;cursor:pointer;" title="Copy address">📋</button>' +
+        '<button id="copy-btn" onclick="copyAddress(this)" style="background:#f0b90b;color:#000;border:none;padding:8px 14px;border-radius:8px;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;" title="Copy address"><span style="font-size:16px;">⧉</span><span style="font-weight:bold;">copy</span></button>' +
       '</div>' +
       '<p id="copy-msg" style="margin:8px 0 0;color:#4caf50;font-size:12px;display:none;">✓ Copied!</p>' +
     '</div>' +
