@@ -422,7 +422,7 @@ function initCommentsShowMore() {
   }
 }
 
-// Mobile Carousel - Fixed for slow connections
+// Mobile Carousel - Fixed for slow connections and to prevent flashing
 function initMobileCarousel() {
   const track = document.getElementById('carousel-track');
   if (!track) return;
@@ -432,43 +432,83 @@ function initMobileCarousel() {
   
   let currentIndex = 0;
   let isTransitioning = false;
+  let allImagesLoaded = false;
   
-  // Check if first image is already loaded
-  function isImageLoaded(slide) {
-    const img = slide.querySelector('img');
-    if (!img) return true;
-    return img.complete && img.naturalHeight !== 0;
-  }
-  
-  // Show first slide immediately if image is already loaded
-  if (isImageLoaded(slides[0])) {
-    slides[0].classList.add('active');
-  } else {
-    // Wait for first image to load
-    const firstImg = slides[0].querySelector('img');
-    if (firstImg) {
-      firstImg.onload = function() {
-        slides[0].classList.add('active');
-      };
+  // Preload all images before starting carousel
+  function preloadAllImages() {
+    const images = track.querySelectorAll('img');
+    let loadedCount = 0;
+    const totalImages = images.length;
+    
+    if (totalImages === 0) {
+      allImagesLoaded = true;
+      showSlide(0);
+      startAutoAdvance();
+      return;
     }
+    
+    images.forEach(function(img) {
+      // Create a new image to preload
+      const preloadImg = new Image();
+      
+      preloadImg.onload = function() {
+        loadedCount++;
+        if (loadedCount === totalImages) {
+          allImagesLoaded = true;
+          showSlide(0);
+          startAutoAdvance();
+        }
+      };
+      
+      preloadImg.onerror = function() {
+        // If image fails to load, still count as loaded to prevent blocking
+        loadedCount++;
+        if (loadedCount === totalImages) {
+          allImagesLoaded = true;
+          showSlide(0);
+          startAutoAdvance();
+        }
+      };
+      
+      preloadImg.src = img.src;
+    });
   }
   
-  // Change slide
+  // Show a specific slide
+  function showSlide(index) {
+    // Use requestAnimationFrame for smoother transitions
+    requestAnimationFrame(function() {
+      slides.forEach(function(slide, i) {
+        if (i === index) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+    });
+  }
+  
+  // Change to next slide
   function changeSlide() {
-    if (isTransitioning) return;
+    if (isTransitioning || !allImagesLoaded) return;
     
     isTransitioning = true;
-    slides[currentIndex].classList.remove('active');
     currentIndex = (currentIndex + 1) % slides.length;
-    slides[currentIndex].classList.add('active');
+    showSlide(currentIndex);
     
+    // Prevent rapid transitions
     setTimeout(function() {
       isTransitioning = false;
     }, 600);
   }
   
-  // Auto-advance every 5 seconds
-  setInterval(changeSlide, 5000);
+  // Start auto-advance timer
+  function startAutoAdvance() {
+    setInterval(changeSlide, 5000);
+  }
+  
+  // Initialize - preload images first, then start
+  preloadAllImages();
 }
 
 // Make functions global
