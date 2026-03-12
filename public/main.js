@@ -70,6 +70,7 @@ let availableCryptos = ['BTC', 'ETH', 'USDT', 'LTC', 'XRP', 'DOGE', 'ADA', 'MATI
   function preloadCriticalImages() {
     const criticalImages = [
       '/public/logo.jpeg',
+      '/public/imani-favicon.jpeg',
       '/public/Imani 2.jpg',
       '/public/imani 1.jpg',
       '/public/Imani 4.jpg',
