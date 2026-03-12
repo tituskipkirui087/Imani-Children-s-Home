@@ -298,7 +298,7 @@ function createCryptoWidget(usdAmount, selectedCrypto) {
 // Create payment address view - Step 2: Show address with copy button
 function createPaymentView(usdAmount, crypto, payAddress, payAmount, paymentId) {
   const info = getCryptoInfo(crypto.toUpperCase());
-  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(payAddress);
+  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(payAddress);
   
   return '<div class="crypto-widget" style="background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:24px;text-align:center;color:#fff;max-width:380px;margin:0 auto;font-family:Arial,sans-serif;">' +
     '<h3 style="margin:0 0 20px;font-size:24px;color:#f0b90b;">Send Crypto</h3>' +
@@ -318,8 +318,8 @@ function createPaymentView(usdAmount, crypto, payAddress, payAmount, paymentId) 
       '</div>' +
       '<p id="copy-msg" style="margin:8px 0 0;color:#4caf50;font-size:12px;display:none;">✓ Copied!</p>' +
     '</div>' +
-    '<div style="margin-bottom:16px;">' +
-      '<img src="' + qrUrl + '" style="width:150px;border-radius:8px;border:2px solid #fff;" />' +
+    '<div style="margin-bottom:16px;text-align:center;">' +
+      '<img src="' + qrUrl + '" style="width:200px;max-width:70vw;border-radius:8px;border:2px solid #fff;display:inline-block;" />' +
     '</div>' +
     '<div id="crypto-status" style="background:rgba(255,193,7,0.2);border-radius:8px;padding:12px;margin-bottom:16px;">' +
       '<p style="margin:0;color:#ffc107;font-size:14px;">⏳ Waiting for payment...</p>' +
