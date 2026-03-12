@@ -41,6 +41,16 @@ app.use((req, res, next) => {
     next();
 });
 
+// Health check endpoint for Render (must be before static files)
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
+
+// Also support /api/health for compatibility
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Paystack keys from environment
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || 'YOUR_PAYSTACK_SECRET_KEY';
 const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY || 'YOUR_PAYSTACK_PUBLIC_KEY';

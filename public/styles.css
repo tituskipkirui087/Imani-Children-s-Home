@@ -6,7 +6,31 @@
   --bg-soft: #f6f7fb;
 }
 
-/* Robust Image Loading - Prevent Media Disappearing */
+/* ====================================
+   JS-RENDERED CONTENT LOADING FIX
+   Hide content until JavaScript renders it
+   ==================================== */
+#faq,
+#comments-area {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Show content when JS finishes rendering */
+#faq.loaded,
+#comments-area.loaded {
+  opacity: 1;
+}
+
+/* Fallback: also check for js-loading class */
+#faq.js-loading,
+#comments-area.js-loading {
+  opacity: 0;
+}
+
+/* ====================================
+   ROBUST IMAGE LOADING
+   ==================================== */
 *{box-sizing:border-box}
 html,body{height:100%}
 

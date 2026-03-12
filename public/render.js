@@ -1,4 +1,34 @@
 // Simple renderer to populate page using config files
+
+// Hide dynamic content initially to prevent render flash
+function hideDynamicContent() {
+  const faq = document.getElementById('faq');
+  const commentsArea = document.getElementById('comments-area');
+  if (faq) faq.classList.add('js-loading');
+  if (commentsArea) commentsArea.classList.add('js-loading');
+}
+
+// Show dynamic content after rendering
+function showDynamicContent() {
+  const faq = document.getElementById('faq');
+  const commentsArea = document.getElementById('comments-area');
+  if (faq) {
+    faq.classList.remove('js-loading');
+    faq.classList.add('loaded');
+  }
+  if (commentsArea) {
+    commentsArea.classList.remove('js-loading');
+    commentsArea.classList.add('loaded');
+  }
+}
+
+// Hide initially on page load (before DOMContentLoaded)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', hideDynamicContent);
+} else {
+  hideDynamicContent();
+}
+
 function renderPage() {
   try {
     // textos
@@ -109,6 +139,9 @@ function renderPage() {
     }
 
   } catch (err) { console.error('renderPage error', err); }
+  
+  // Show dynamic content after rendering completes
+  showDynamicContent();
 }
 
 // Notification System
